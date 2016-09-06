@@ -12,7 +12,10 @@ hardanswers=['dating','age','organic','isotope','Nobel','decrease','calculate','
 #text taken from wikipedia at the url: https://en.wikipedia.org/wiki/Radiocarbon_dating
 
 def punc_stripper(string):
-    #this function strips punctuation and symbols from a string so it can be compared to the key words
+    """this function accepts one string as input.
+    it will return be the same string withouth the
+    symbols specified in the list punctutationlist
+    """
     stripped = ""
     punctutationlist = [',','.','\n','(',')']
     for character in string:
@@ -22,8 +25,10 @@ def punc_stripper(string):
 
 
 def homemade_Split(string):
-    #splits the content of a string into a list using space as delimiter
-    #unlike the split built-it method it does not strip the escape characters off, very handy to keep the format (new lines) when rejoined into the new string
+    """This function accepts one string as input
+    It will split the input string into a list using space (" ") as delimiter
+    It will return the generated list
+    """
     splitted = []
     word = ''
     for character in string:
@@ -36,7 +41,9 @@ def homemade_Split(string):
 
 
 def blanker(text,listofkeywords):
-#This function automatizes the process of manually creating blanks words on the text (so I dont have to) The text is splitted and stripped of punctuanton to be compared to the list of keywors
+    """This function requires 2 inputs: string and a list.
+    The function will return a string similar to the input string but
+    the words contained in the input list will be replaced by numbered labels"""
     textlist = homemade_Split(text)
     blanked = []
     for element in textlist:
@@ -48,52 +55,51 @@ def blanker(text,listofkeywords):
             label = "__"+str(labelno)+"__"
             element = element.replace(coreword,label)    #we replace the core word leaving any potential punctuation in element
             blanked.append(element)
-    blanked = " ".join(blanked)
+    blanked = " ".join(blanked)+"\n"
     return blanked
 
 def game(text,listofkeywords):
-    #main loops that handle the logic of the game
-    blanknumber = 0
+    """This function runs the main game loops that contains the logic of the game
+    This function requires two inputs: a text and a list. It will also expect user inputs
+    the function will print the text and will compare the user input to the input list
+    depending on the game events the gamer status will change and eventually will either print
+    YOU WON or it will halt the program"""
     for keyword in listofkeywords:
-        blanknumber = blanknumber + 1
-        tries_left = 5
-        print "you have "+str(tries_left)+" tries left"
-        print "The current paragraph is:"
+        tries_left,warning,game_over = 5,1,0 #define gamer status depending on the games left
+        print "you have "+str(tries_left)+" tries left\n\nThe current paragraph is:"
         while True:
-            print
-
-            print blanker(text,listofkeywords)
-            user_input = raw_input("What is the correct answer for __ "+str(blanknumber)+"__?").lower()   #lower method used on input and keyword
+            print "\n",blanker(text,listofkeywords)
+            user_input = raw_input("What is the correct answer for __"+str(listofkeywords.index(keyword)+1)+"__?").lower()   #lower method used on input and keyword
             if keyword.lower() == user_input:
-                listofkeywords[blanknumber-1] = None #When answer is right the list of keywords must be modified so the function prints the revealed anwsers
-                print
+                listofkeywords[listofkeywords.index(keyword)] = None #When answer is right the list of keywords must be modified so the function prints the revealed anwsers
                 break
             else:
                 tries_left = tries_left - 1
-                if tries_left == 0:
+                if tries_left == game_over:
                     exit()
-                elif tries_left == 1:
+                elif tries_left == warning:
                     print "Atention, you only have one TRY LEFT!"
-                    print
                 else:
-                    print
-                    print "That is not the correct answer, lets try again\n"
-                    print "you still have "+str(tries_left)+" tries left"
-                    print
+                    print "\nThat is not the correct answer, lets try again\nYou still have "+str(tries_left)+" tries left\n"
     print "YOU WON !"
-#beginning of the game
-#level selector
-user_input = ""
-while user_input not in ["easy","medium","hard"]:
-    user_input = raw_input("Please select a game difficulty by typing it in!\nPossible choices include easy, medium, and hard. ").lower()
-    if user_input == "easy":
-        print "\nYou have choosen easy\n"
-        game(easytext,easyanswers)
-    elif user_input == "medium":
-        print "\nYou have choosen medium\n"
-        game(mediumtext,mediumanswers)
-    elif user_input == "hard":
-        print "\nYou have choosen hard\n"
-        game(hardtext,hardanswers)
-    else:
-        print "\nThat is not an option\n"
+def game_selektor():
+    """This function does not require preexisting input since it starts the game
+    It prompts the user for an input
+    depending on the input it will call the game function
+    with the right set of inputs, which depend on the difficulty level"""
+    user_input = ""
+    while user_input not in ["easy","medium","hard"]:
+        user_input = raw_input("Please select a game difficulty by typing it in!\nPossible choices include easy, medium, and hard. ").lower()
+        if user_input == "easy":
+            print "\nYou have choosen easy\n"
+            game(easytext,easyanswers)
+        elif user_input == "medium":
+            print "\nYou have choosen medium\n"
+            game(mediumtext,mediumanswers)
+        elif user_input == "hard":
+            print "\nYou have choosen hard\n"
+            game(hardtext,hardanswers)
+        else:
+            print "\nThat is not an option\n"
+#lets start the game!
+game_selektor()
